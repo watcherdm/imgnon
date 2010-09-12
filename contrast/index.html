@@ -1,0 +1,12 @@
+<html>
+  <head>
+    <title>{{ title }}</title>
+    {{ style }}
+  </head>
+  <body>
+    {% for img in image_index %}
+      <a href="/contrast/{{ img.id }}/"><img src="/contrast/{{ img.imgdata.url }}" /></a>
+    {% endfor %}
+    {{ script }}
+  </body>
+</html>
