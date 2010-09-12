@@ -36,6 +36,7 @@ def adjust(request):
       con += 0.3
       tries += 1
       imagen = Image.open(current)
+      #attempting to scale did not work out so well. Looking into ways of detecting the bar code region.
       #bbox = (imagen.size[0] * ((con - 1)/10), imagen.size[1] * ((con - 1)/8), imagen.size[0] - imagen.size[0] * ((con - 1)/10), imagen.size[1] - imagen.size[1] * ((con - 1)/8))
       #imagen = imagen.crop(bbox)
       imagen = ImageOps.grayscale(imagen)
@@ -47,9 +48,11 @@ def adjust(request):
       current = '/home/gabriel/imgnon/tmp/f%d.jpg' % (con * 100)
       imagen.save(current, "JPEG")
       cont = upload_image(current)
-    return HttpResponse(json.dumps({'codes':cont['codes'],'tries':tries}))
+    result = json.dumps({'success': True, 'codes':cont['codes'],'tries':tries}) if len(cont['codes']) else json.dumps({'success': False, 'codes':None,'tries':tries})
+    return HttpResponse(result)
   else:
-    return Http404
+    result = json.dumps({'success':False, 'message': 'Post an image to this url to see if there is a valid UPC code lookup for it.'})
+    return HttpResponse(result)
 
 def upload_image(code_image, **kwargs):
   sb = stickybits.Stickybits(apikey=TEST_KEY)
