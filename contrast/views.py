@@ -21,42 +21,40 @@ def detail(request, contrast_id):
 @csrf_exempt
 def adjust(request):
   if request.method == 'POST':
+    sb = stickybits.Stickybits(apikey=TEST_KEY)
+    sb.base_url = 'http://dev.stickybits.com/api/2/'
+    current = '/home/gabriel/imgnon/tmp/f.jpg'
     post = request.POST
     files = request.FILES
     image = request.FILES['img']
-    dest = open('/home/gabriel/imgnon/tmp/f.jpg', 'wb+')
+    dest = open(current, 'wb+')
     for chunk in image.chunks():
       dest.write(chunk)
     dest.close()
     con = 1.0
     tries = 0
-    cont = upload_image('/home/gabriel/imgnon/tmp/f.jpg')
-    current = '/home/gabriel/imgnon/tmp/f.jpg'
-    while len(cont['codes']) == 0 and tries < 10:
+    cont = upload_image(sb, current)
+    count = len(cont['codes'])
+    while count == 0 and tries <= 5:
       con += 0.3
-      tries += 1
       imagen = Image.open(current)
-      #attempting to scale did not work out so well. Looking into ways of detecting the bar code region.
-      #bbox = (imagen.size[0] * ((con - 1)/10), imagen.size[1] * ((con - 1)/8), imagen.size[0] - imagen.size[0] * ((con - 1)/10), imagen.size[1] - imagen.size[1] * ((con - 1)/8))
-      #imagen = imagen.crop(bbox)
       imagen = ImageOps.grayscale(imagen)
       bri = ImageEnhance.Brightness(imagen)
       imagen = bri.enhance(float(con) * 1.2)
       enh = ImageEnhance.Contrast(imagen)
       imagen = enh.enhance(float(con))
-      imagen.show()
       current = '/home/gabriel/imgnon/tmp/f%d.jpg' % (con * 100)
       imagen.save(current, "JPEG")
-      cont = upload_image(current)
+      cont = upload_image(sb, current)
+      tries += 1
+      count = len(cont['codes'])
     result = json.dumps({'success': True, 'codes':cont['codes'],'tries':tries}) if len(cont['codes']) else json.dumps({'success': False, 'codes':None,'tries':tries})
     return HttpResponse(result)
   else:
     result = json.dumps({'success':False, 'message': 'Post an image to this url to see if there is a valid UPC code lookup for it.'})
     return HttpResponse(result)
 
-def upload_image(code_image, **kwargs):
-  sb = stickybits.Stickybits(apikey=TEST_KEY)
-  sb.base_url = 'http://dev.stickybits.com/api/2/'
+def upload_image(sb, code_image, **kwargs):
   data = {}
   headers = None
   data['code_image'] = code_image
