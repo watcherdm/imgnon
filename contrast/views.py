@@ -54,7 +54,6 @@ def evaluate(reques):
     return HttpResponse(result)
   else:
     return HttpResponse({'success': False, 'message': 'Post an image to evaluate'})
-  
 
 def adjust(request):
   if request.method == 'POST':
