@@ -50,6 +50,7 @@ def evaluate(request):
     if bri:
       brienh = ImageEnhance.Brightness(imagen)
       imagen = brienh.enhance(float(bri))
+      con = bri
     if con:
       conenh = ImageEnhance.Contrast(imagen)
       imagen = conenh.enhance(float(con))
