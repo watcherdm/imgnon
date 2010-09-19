@@ -14,6 +14,23 @@ IMAGE_RANDOM = 'holder'
 def index(request):
   return render_to_response('adjust.html')
 
+def control(request):
+  if request.method == 'POST':
+    sb = stickybits.Stickybits(apikey=TEST_KEY)
+    sb.base_url = 'http://dev.stickybits.com/api/2/'
+    image = request.FILES['img']
+    imagen = Image.open(image)
+    IMAGE_RANDOM = hashlib.sha224(datetime.datetime.now().isoformat()).hexdigest()[:8]
+    current = "%s/%s.jpg" % (TEMP_DIR, IMAGE_RANDOM)
+    imagen.save(current, "JPEG")
+    cont = upload_image(sb, current)
+    if len(cont["codes"]) > 0:
+      result = json.dumps({'success': True, 'codes':cont['codes']})
+      return HttpResponse(result)
+    else:
+      result = json.dumps({'success':False, 'codes':cont['codes']})
+      return HttpResponse(result)
+
 def evaluate(request):
   """ This will attempt a passive evaluation of the image
       reduce the size if it is larger than 2000 in any direction
