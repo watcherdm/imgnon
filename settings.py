@@ -1,10 +1,10 @@
 # Django settings for imgnon project.
-
+import os.path
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    # ('Your Name', 'your_email@domain.com'),
+    ('Gabriel Hernandez', 'webspinner.gabriel@gmail.com'),
 )
 
 MANAGERS = ADMINS
@@ -12,7 +12,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '/home/gabriel/imgnon/imgnon/db',                      # Or path to database file if using sqlite3.
+        'NAME': 'db',                      # Or path to database file if using sqlite3.
         'USER': '',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
@@ -45,7 +45,7 @@ USE_L10N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = '/home/gabriel/imgnon/imgnon/'
+MEDIA_ROOT = 'imgnon/'
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
@@ -77,11 +77,9 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'imgnon.urls'
 
+PROJECT_DIR = os.path.dirname(__file__)
 TEMPLATE_DIRS = (
-    "/home/gabriel/imgnon/imgnon/contrast",
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
+  os.path.join(PROJECT_DIR, "contrast")
 )
 
 INSTALLED_APPS = (
