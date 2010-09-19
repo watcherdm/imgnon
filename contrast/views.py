@@ -29,6 +29,7 @@ def evaluate(request):
     image = request.FILES['img']
     dest = open(current, 'wb+')
     for chunk in image.chunks():
+      print "Writing the image to disk"
       dest.write(chunk)
     dest.close()
     current = TEMP_DIR + "/f.png"
@@ -37,6 +38,7 @@ def evaluate(request):
     sz = imagen.size
     while sz[0] > 2000 or sz[1] > 2000:
       imagen.resize([x/2 for x in list(sz)])
+      sz = imagen.size
     imst = ImageStat.Stat(imagen)
     xt = imst.extrema
     con = (xt[0]/25500) * CONTRAST_CONSTANT if x[0] > 20 else None
