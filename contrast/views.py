@@ -36,19 +36,19 @@ def evaluate(request):
     if len(cont["codes"]) > 0:
       result = json.dumps({'success': True, 'codes':cont['codes'],'method':'greyscale and scale only'})
       return HttpResponse(result)
-    return adjust(request)
+    return adjust(request, image)
   else:
     return HttpResponse({'success': False, 'message': 'Post an image to evaluate'})
 
-def adjust(request):
+def adjust(request, image = None):
   if request.method == 'POST':
+    if image is None:
+      image = request.FILES['img']      
     IMAGE_RANDOM = hashlib.sha224(datetime.datetime.now().isoformat()).hexdigest()[:8]
     sb = stickybits.Stickybits(apikey=TEST_KEY)
     sb.base_url = 'http://dev.stickybits.com/api/2/'
     current = "%s/%s.jpg" % (TEMP_DIR, IMAGE_RANDOM)
     post = request.POST
-    files = request.FILES
-    image = request.FILES['img']
     imagen = Image.open(image)
     imagen = ImageOps.grayscale(imagen)
     sz = imagen.size
