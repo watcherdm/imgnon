@@ -7,8 +7,6 @@ ADMINS = (
     ('Gabriel Hernandez', 'webspinner.gabriel@gmail.com'),
 )
 
-CONTRAST_CONSTANT = 1.3
-BRIGHTNESS_CONSTANT = 1.6
 
 MANAGERS = ADMINS
 

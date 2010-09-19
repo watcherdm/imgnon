@@ -5,12 +5,14 @@ import StringIO
 from PIL import Image, ImageEnhance, ImageOps, ImageStat
 from imgnon.contrast.sbm import stickybits
 from django.utils import simplejson as json
-import settings
 TEST_KEY = "c1e1928908a544dbc15b5e0231887a58"
 import os.path
 PROJECT_DIR = os.path.dirname(__file__)
 TEMP_DIR = os.path.join(PROJECT_DIR, "imgtmp")
-def index(request):
+CONTRAST_CONSTANT = 1.3
+BRIGHTNESS_CONSTANT = 1.6def 
+
+index(request):
   return render_to_response('adjust.html')
 
 def detail(request, contrast_id):
