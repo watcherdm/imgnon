@@ -5,9 +5,11 @@ from imgnon.contrast.models import Image as img
 import StringIO
 from PIL import Image, ImageEnhance, ImageOps
 from imgnon.contrast.sbm import stickybits
-import simplejson as json
+from django.utils import simplejson as json
 TEST_KEY = "c1e1928908a544dbc15b5e0231887a58"
-
+import os.path
+PROJECT_DIR = os.path.dirname(__file__)
+TEMP_DIR = os.path.join(PROJECT_DIR, "imgtmp")
 def index(request):
   return render_to_response('adjust.html')
 
@@ -23,7 +25,7 @@ def adjust(request):
   if request.method == 'POST':
     sb = stickybits.Stickybits(apikey=TEST_KEY)
     sb.base_url = 'http://dev.stickybits.com/api/2/'
-    current = '/home/gabriel/imgnon/tmp/f.jpg'
+    current = TEMP_DIR + "/f.png"
     post = request.POST
     files = request.FILES
     image = request.FILES['img']
@@ -43,7 +45,7 @@ def adjust(request):
       imagen = bri.enhance(float(con) * 1.2)
       enh = ImageEnhance.Contrast(imagen)
       imagen = enh.enhance(float(con))
-      current = '/home/gabriel/imgnon/tmp/f%d.jpg' % (con * 100)
+      current = '%s/f%d.jpg' % (TEMP_DIR, con * 100)
       imagen.save(current, "JPEG")
       cont = upload_image(sb, current)
       tries += 1
