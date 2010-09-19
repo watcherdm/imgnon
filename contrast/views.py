@@ -78,3 +78,21 @@ def adjust(request):
   else:
     result = json.dumps({'success':False, 'message': 'Post an image to this url to see if there is a valid UPC code lookup for it.'})
     return HttpResponse(result)
+    
+def upload_image(sb, code_image, **kwargs):
+  data = {}
+  headers = None
+  data['code_image'] = code_image
+
+  try:
+    content_type, body = stickybits.file_encode(data['code_image'])
+  except:
+    return False
+
+  headers = {
+  'Content-Type': content_type
+  }
+  data = body
+
+  return sb.request('scan.create', kwargs, "POST",
+  data=data, headers=headers)
