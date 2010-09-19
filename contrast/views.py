@@ -27,7 +27,6 @@ def evaluate(request):
     sb.base_url = 'http://dev.stickybits.com/api/2/'
     current = TEMP_DIR + "/f.png"
     post = request.POST
-    files = request.FILES
     image = request.FILES['img']
     imagen = Image.open(image)
     imagen = ImageOps.grayscale(imagen)
@@ -41,7 +40,6 @@ def evaluate(request):
     if len(cont["codes"]) > 0:
       result = json.dumps({'success': True, 'codes':cont['codes'],'method':'greyscale and scale only'})
       return HttpResponse(result)
-      
     imst = ImageStat.Stat(imagen)
     xt = imst.extrema
     print xt
