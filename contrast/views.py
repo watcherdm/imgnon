@@ -1,6 +1,5 @@
 from django.http import HttpResponse, Http404
 from django.shortcuts import render_to_response
-from django.views.decorators.csrf import csrf_exempt
 from imgnon.contrast.models import Image as img
 import StringIO
 from PIL import Image, ImageEnhance, ImageOps
@@ -20,7 +19,7 @@ def detail(request, contrast_id):
     raise Http404
   return render_to_response('detail.html', {'image_index':image})
 
-@csrf_exempt
+
 def adjust(request):
   if request.method == 'POST':
     sb = stickybits.Stickybits(apikey=TEST_KEY)
