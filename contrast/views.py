@@ -5,6 +5,7 @@ import StringIO
 from PIL import Image, ImageEnhance, ImageOps, ImageStat
 from imgnon.contrast.sbm import stickybits
 from django.utils import simplejson as json
+import settings
 TEST_KEY = "c1e1928908a544dbc15b5e0231887a58"
 import os.path
 PROJECT_DIR = os.path.dirname(__file__)
