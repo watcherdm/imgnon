@@ -1,7 +1,13 @@
-<h1>Image Contrast</h1>
+<h1>Image Adjustment</h1>
 
 <form action="/contrast/adjust/" enctype="form/multipart" method="post">
-  <input type="file" id="img" name="img"/>
-  <input type="range" id="amt" name="amt" min="0" max="3" step="0.1"/>
+  <input type="file" name="img"/>
   <input type="submit" value="Adjust"/>
+</form>
+
+<h1>Image Evaluation</h1>
+
+<form action="/contrast/evaluate/" enctype="form/multipart" method="post">
+  <input type="file" name="img"/>
+  <input type="submit" value="Evaluate"/>
 </form>
