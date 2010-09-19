@@ -33,7 +33,7 @@ def evaluate(request):
     dest.close()
     current = TEMP_DIR + "/f.png"
     imagen = Image.open(current)
-    imagen = ImageOps.grayscale(image)
+    imagen = ImageOps.grayscale(imagen)
     sz = imagen.size
     while sz[0] > 2000 or sz[1] > 2000:
       imagen.resize([x/2 for x in list(sz)])
