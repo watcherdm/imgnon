@@ -50,7 +50,7 @@ def evaluate(request):
     if con:
       conenh = ImageEnhance.Contrast(imagen)
       imagen = conenh.enhance(float(con))
-    current = '%s/f%d.jpg' % (TEMP_DIR, con * 100)
+    current = '%s/f.jpg' % (TEMP_DIR)
     imagen.save(current, "JPEG")
     cont = upload_image(sb, current)
     result = json.dumps({'success': True, 'codes':cont['codes'],'contrast': con, 'brightness':bri}) if len(cont['codes']) else json.dumps({'success': False, 'codes':None,'contrast': con, 'brightness':bri})
