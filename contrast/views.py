@@ -45,8 +45,8 @@ def evaluate(request):
     imst = ImageStat.Stat(imagen)
     xt = imst.extrema
     print xt
-    con = (xt[0][0]/float(255)) * (CONTRAST_CONSTANT * 100) if xt[0][0] > 10 else None
-    bri =  (xt[0][1]/float(255)) * (BRIGHTNESS_CONSTANT * 100) if xt[0][1] < 220 else None
+    con = (xt[0][0]/float(255)) * (CONTRAST_CONSTANT) if xt[0][0] > 10 else None
+    bri =  (xt[0][1]/float(255)) * (BRIGHTNESS_CONSTANT) if xt[0][1] < 220 else None
     if bri:
       brienh = ImageEnhance.Brightness(imagen)
       imagen = brienh.enhance(float(bri))
