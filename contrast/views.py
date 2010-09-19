@@ -40,24 +40,7 @@ def evaluate(request):
     if len(cont["codes"]) > 0:
       result = json.dumps({'success': True, 'codes':cont['codes'],'method':'greyscale and scale only'})
       return HttpResponse(result)
-    imst = ImageStat.Stat(imagen)
-    xt = imst.extrema
-    print xt
-    con = (xt[0][0]/float(255)) * (CONTRAST_CONSTANT) if xt[0][0] > 2 else None
-    bri =  (xt[0][1]/float(255)) * (BRIGHTNESS_CONSTANT) if xt[0][1] < 220 else None
-    if bri:
-      brienh = ImageEnhance.Brightness(imagen)
-      imagen = brienh.enhance(float(bri))
-      con = bri
-    if con:
-      conenh = ImageEnhance.Contrast(imagen)
-      imagen = conenh.enhance(float(con))
-    print "brightness : %s" % bri
-    print "contrast: %s" % con
-    imagen.save(current)
-    cont = upload_image(sb, current)
-    result = json.dumps({'success': True, 'codes':cont['codes'],'contrast': con, 'brightness':bri}) if len(cont['codes']) > 0 else json.dumps({'success': False, 'codes':None,'contrast': con, 'brightness':bri})
-    return HttpResponse(result)
+    return adjust(request)
   else:
     return HttpResponse({'success': False, 'message': 'Post an image to evaluate'})
 
