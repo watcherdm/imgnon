@@ -55,7 +55,8 @@ def evaluate(request):
       imagen = conenh.enhance(float(con))
     print "brightness : %s" % bri
     print "contrast: %s" % con
-    cont = upload_image(sb, imagen)
+    imagen.save(current)
+    cont = upload_image(sb, current)
     result = json.dumps({'success': True, 'codes':cont['codes'],'contrast': con, 'brightness':bri}) if len(cont['codes']) else json.dumps({'success': False, 'codes':None,'contrast': con, 'brightness':bri})
     return HttpResponse(result)
   else:
