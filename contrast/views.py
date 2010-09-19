@@ -33,8 +33,9 @@ def evaluate(request):
     while sz[0] > 2000 or sz[1] > 2000:
       imagen = imagen.resize([x/2 for x in list(sz)])
       sz = imagen.size
+    imagen.save(current)
     print "Sending the black and white resized image"
-    cont = upload_image(sb, imagen)
+    cont = upload_image(sb, current)
     if len(cont["codes"]) > 0:
       result = json.dumps({'success': True, 'codes':cont['codes'],'method':'greyscale and scale only'})
       return HttpResponse(result)
