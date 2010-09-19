@@ -27,32 +27,32 @@ def evaluate(request):
     post = request.POST
     files = request.FILES
     image = request.FILES['img']
-    dest = open(current, 'wb+')
-    for chunk in image.chunks():
-      print "Writing the image to disk"
-      dest.write(chunk)
-    dest.close()
-    current = TEMP_DIR + "/f.png"
-    imagen = Image.open(current)
+    imagen = Image.open(image)
     imagen = ImageOps.grayscale(imagen)
     sz = imagen.size
     while sz[0] > 2000 or sz[1] > 2000:
       imagen = imagen.resize([x/2 for x in list(sz)])
       sz = imagen.size
+    print "Sending the black and white resized image"
+    cont = upload_image(sb, imagen)
+    if len(cont["codes"]) > 0:
+      result = json.dumps({'success': True, 'codes':cont['codes'],'method':'greyscale and scale only'})
+      return HttpResponse(result)
+      
     imst = ImageStat.Stat(imagen)
     xt = imst.extrema
     print xt
-    con = (xt[0][0]/25500) * CONTRAST_CONSTANT if xt[0][0] > 20 else None
-    bri =  (xt[0][1]/25500) * BRIGHTNESS_CONSTANT if xt[0][1] < 180 else None
+    con = (xt[0][0]/25500) * CONTRAST_CONSTANT if xt[0][0] > 10 else None
+    bri =  (xt[0][1]/25500) * BRIGHTNESS_CONSTANT if xt[0][1] < 220 else None
     if bri:
       brienh = ImageEnhance.Brightness(imagen)
       imagen = brienh.enhance(float(bri))
     if con:
       conenh = ImageEnhance.Contrast(imagen)
       imagen = conenh.enhance(float(con))
-    current = '%s/f.jpg' % (TEMP_DIR)
-    imagen.save(current, "JPEG")
-    cont = upload_image(sb, current)
+    print "brightness : %s" % bri
+    print "contrast: %s" % con
+    cont = upload_image(sb, imagen)
     result = json.dumps({'success': True, 'codes':cont['codes'],'contrast': con, 'brightness':bri}) if len(cont['codes']) else json.dumps({'success': False, 'codes':None,'contrast': con, 'brightness':bri})
     return HttpResponse(result)
   else:
