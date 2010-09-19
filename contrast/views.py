@@ -19,7 +19,7 @@ def detail(request, contrast_id):
     raise Http404
   return render_to_response('detail.html', {'image_index':image})
 
-def evaluate(reques):
+def evaluate(request):
   if request.method == 'POST':
     sb = stickybits.Stickybits(apikey=TEST_KEY)
     sb.base_url = 'http://dev.stickybits.com/api/2/'
