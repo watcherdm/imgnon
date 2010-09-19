@@ -1,7 +1,8 @@
 from django.http import HttpResponse, Http404
 from django.shortcuts import render_to_response
-from imgnon.contrast.models import Image as img
 import StringIO
+import hashlib
+import datetime
 from PIL import Image, ImageEnhance, ImageOps, ImageStat
 from imgnon.contrast.sbm import stickybits
 from django.utils import simplejson as json
@@ -9,23 +10,19 @@ TEST_KEY = "c1e1928908a544dbc15b5e0231887a58"
 import os.path
 PROJECT_DIR = os.path.dirname(__file__)
 TEMP_DIR = os.path.join(PROJECT_DIR, "imgtmp")
-CONTRAST_CONSTANT = 1.3
-BRIGHTNESS_CONSTANT = 1.6
+IMAGE_RANDOM = 'holder'
 def index(request):
   return render_to_response('adjust.html')
 
-def detail(request, contrast_id):
-  try:
-    image = img.objects.get(pk=contrast_id)
-  except Contrast.DoesNotExist:
-    raise Http404
-  return render_to_response('detail.html', {'image_index':image})
-
 def evaluate(request):
+  """ This will attempt a passive evaluation of the image
+      reduce the size if it is larger than 2000 in any direction
+      greyscale all images"""
   if request.method == 'POST':
+    IMAGE_RANDOM = hashlib.sha224(datetime.datetime.now().isoformat()).hexdigest()[:8]
     sb = stickybits.Stickybits(apikey=TEST_KEY)
     sb.base_url = 'http://dev.stickybits.com/api/2/'
-    current = TEMP_DIR + "/f.png"
+    current = "%s/%s.jpg" % (TEMP_DIR, IMAGE_RANDOM)
     post = request.POST
     image = request.FILES['img']
     imagen = Image.open(image)
@@ -34,8 +31,7 @@ def evaluate(request):
     while sz[0] > 2000 or sz[1] > 2000:
       imagen = imagen.resize([x/2 for x in list(sz)])
       sz = imagen.size
-    imagen.save(current)
-    print "Sending the black and white resized image"
+    imagen.save(current, "JPEG")
     cont = upload_image(sb, current)
     if len(cont["codes"]) > 0:
       result = json.dumps({'success': True, 'codes':cont['codes'],'method':'greyscale and scale only'})
@@ -46,16 +42,20 @@ def evaluate(request):
 
 def adjust(request):
   if request.method == 'POST':
+    IMAGE_RANDOM = hashlib.sha224(datetime.datetime.now().isoformat()).hexdigest()[:8]
     sb = stickybits.Stickybits(apikey=TEST_KEY)
     sb.base_url = 'http://dev.stickybits.com/api/2/'
-    current = TEMP_DIR + "/f.png"
+    current = "%s/%s.jpg" % (TEMP_DIR, IMAGE_RANDOM)
     post = request.POST
     files = request.FILES
     image = request.FILES['img']
-    dest = open(current, 'wb+')
-    for chunk in image.chunks():
-      dest.write(chunk)
-    dest.close()
+    imagen = Image.open(image)
+    imagen = ImageOps.grayscale(imagen)
+    sz = imagen.size
+    while sz[0] > 2000 or sz[1] > 2000:
+      imagen = imagen.resize([x/2 for x in list(sz)])
+      sz = imagen.size
+    imagen.save(current, "JPEG")
     con = 1.0
     tries = 0
     cont = upload_image(sb, current)
@@ -68,7 +68,7 @@ def adjust(request):
       imagen = bri.enhance(float(con) * 1.2)
       enh = ImageEnhance.Contrast(imagen)
       imagen = enh.enhance(float(con))
-      current = '%s/f%d.jpg' % (TEMP_DIR, con * 100)
+      current = '%s/%s%d.jpg' % (TEMP_DIR, IMAGE_RANDOM, con * 100)
       imagen.save(current, "JPEG")
       cont = upload_image(sb, current)
       tries += 1
@@ -78,21 +78,3 @@ def adjust(request):
   else:
     result = json.dumps({'success':False, 'message': 'Post an image to this url to see if there is a valid UPC code lookup for it.'})
     return HttpResponse(result)
-
-def upload_image(sb, code_image, **kwargs):
-  data = {}
-  headers = None
-  data['code_image'] = code_image
-
-  try:
-    content_type, body = stickybits.file_encode(data['code_image'])
-  except:
-    return False
-
-  headers = {
-  'Content-Type': content_type
-  }
-  data = body
-
-  return sb.request('scan.create', kwargs, "POST",
-  data=data, headers=headers)
