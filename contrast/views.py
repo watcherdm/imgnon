@@ -53,7 +53,7 @@ def evaluate(request):
     if len(cont["codes"]) > 0:
       result = json.dumps({'success': True, 'codes':cont['codes'],'method':'greyscale and scale only'})
       return HttpResponse(result)
-    return adjust(request, image)
+    return adjust(request, current)
   else:
     return HttpResponse({'success': False, 'message': 'Post an image to evaluate'})
 
