@@ -58,7 +58,7 @@ def evaluate(request):
     print "contrast: %s" % con
     imagen.save(current)
     cont = upload_image(sb, current)
-    result = json.dumps({'success': True, 'codes':cont['codes'],'contrast': con, 'brightness':bri}) if len(cont['codes']) else json.dumps({'success': False, 'codes':None,'contrast': con, 'brightness':bri})
+    result = json.dumps({'success': True, 'codes':cont['codes'],'contrast': con, 'brightness':bri}) if len(cont['codes']) > 0 else json.dumps({'success': False, 'codes':None,'contrast': con, 'brightness':bri})
     return HttpResponse(result)
   else:
     return HttpResponse({'success': False, 'message': 'Post an image to evaluate'})
