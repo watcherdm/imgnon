@@ -1,9 +1,8 @@
 from django.http import HttpResponse, Http404
 from django.shortcuts import render_to_response
-from django.views.decorators.csrf import csrf_exempt
 from imgnon.contrast.models import Image as img
 import StringIO
-from PIL import Image, ImageEnhance, ImageOps
+from PIL import Image, ImageEnhance, ImageOps, ImageStat
 from imgnon.contrast.sbm import stickybits
 from django.utils import simplejson as json
 TEST_KEY = "c1e1928908a544dbc15b5e0231887a58"
@@ -20,7 +19,43 @@ def detail(request, contrast_id):
     raise Http404
   return render_to_response('detail.html', {'image_index':image})
 
-@csrf_exempt
+def evaluate(reques):
+  if request.method == 'POST':
+    sb = stickybits.Stickybits(apikey=TEST_KEY)
+    sb.base_url = 'http://dev.stickybits.com/api/2/'
+    current = TEMP_DIR + "/f.png"
+    post = request.POST
+    files = request.FILES
+    image = request.FILES['img']
+    dest = open(current, 'wb+')
+    for chunk in image.chunks():
+      dest.write(chunk)
+    dest.close()
+    current = TEMP_DIR + "/f.png"
+    imagen = Image.open(current)
+    imagen = ImageOps.grayscale(image)
+    sz = imagen.size
+    while sz[0] > 2000 or sz[1] > 2000:
+      imagen.resize([x/2 for x in list(sz)])
+    imst = ImageStat.Stat(imagen)
+    xt = imst.extrema
+    con = (xt[0]/25500) * CONTRAST_CONSTANT if x[0] > 20 else None
+    bri =  (xt[1]/25500) * BRIGHTNESS_CONSTANT if x[1] < 180 else None
+    if bri:
+      brienh = ImageEnhance.Brightness(imagen)
+      imagen = brienh.enhance(float(bri))
+    if con:
+      conenh = ImageEnhance.Contrast(imagen)
+      imagen = conenh.enhance(float(con))
+    current = '%s/f%d.jpg' % (TEMP_DIR, con * 100)
+    imagen.save(current, "JPEG")
+    cont = upload_image(sb, current)
+    result = json.dumps({'success': True, 'codes':cont['codes'],'contrast': con, 'brightness':bri}) if len(cont['codes']) else json.dumps({'success': False, 'codes':None,'contrast': con, 'brightness':bri})
+    return HttpResponse(result)
+  else:
+    return HttpResponse({'success': False, 'message': 'Post an image to evaluate'})
+  
+
 def adjust(request):
   if request.method == 'POST':
     sb = stickybits.Stickybits(apikey=TEST_KEY)
