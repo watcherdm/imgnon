@@ -1,20 +1,31 @@
-<h1>Control</h1>
+<style>
+  body{background-color: rgba(0,0,0,.2); font-family: Arial;}
+  h1 {font-family: Georgia;}
+  form {background-color: rgba(255,255,255,.9); border-radius: 20px;padding: 20px;}
+</style>
 
+<h1>Control</h1>
+<p>
+  Choose a file and click the button to check if the image would return a code value without modification.
+</p>
 <form action="/contrast/control/" enctype="form/multipart" method="post">
   <input type="file" name="img"/>
   <input type="submit" value="Control"/>
 </form>
 
-<h1>Image Adjustment</h1>
-
-<form action="/contrast/adjust/" enctype="form/multipart" method="post">
-  <input type="file" name="img"/>
-  <input type="submit" value="Adjust"/>
-</form>
-
-<h1>Image Evaluation</h1>
-
+<h1>Evaluation</h1>
+<p>
+  Choose a file and click the button to adjust the image and check the return code. This operation will:
+</p>
+<ol>
+    <li>grayscale the image</li>
+    <li>scale the image to a transfer friendly size</li>
+    <li>adjust brightness and contrast up to 6 times before failing</li>
+</ol>  
 <form action="/contrast/evaluate/" enctype="form/multipart" method="post">
   <input type="file" name="img"/>
   <input type="submit" value="Evaluate"/>
 </form>
+<script type="text/javascript">
+  
+</script>
