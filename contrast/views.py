@@ -10,9 +10,8 @@ import os.path
 PROJECT_DIR = os.path.dirname(__file__)
 TEMP_DIR = os.path.join(PROJECT_DIR, "imgtmp")
 CONTRAST_CONSTANT = 1.3
-BRIGHTNESS_CONSTANT = 1.6def 
-
-index(request):
+BRIGHTNESS_CONSTANT = 1.6
+def index(request):
   return render_to_response('adjust.html')
 
 def detail(request, contrast_id):
